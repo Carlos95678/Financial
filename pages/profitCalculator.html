@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/profitCalculator.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0"></script>
+  <title>profit Calculator</title>
+</head>
+<body>
+  <div class="container">
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="winRate" class="form-label">Winrate %</label>
+		  <input type="number" class="form-control" id="winRate">
+		</div>
+	  </div>
+	</div>
+	<br />
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="positionSize" class="form-label">Position Size</label>
+		  <input type="number" class="form-control" id="positionSize">
+		</div>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="numTrades" class="form-label">Number of Trades</label>
+		  <input type="number" class="form-control" id="numTrades">
+		</div>
+	  </div>
+	</div>
+	<br/>
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="winPercentage" class="form-label">Average Win %</label>
+		  <input type="number" class="form-control" id="winPercentage">
+		</div>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="lossPercentage" class="form-label">Average Loss %</label>
+		  <input type="number" class="form-control" id="lossPercentage">
+		</div>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="subtractAfter" class="form-label">Subtract After (Every x trades)</label>
+		  <input type="number" class="form-control" id="subtractAfter">
+		</div>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="col">
+		<div class="mb-3">
+		  <label for="subtractAmount" class="form-label">Subtract Amount</label>
+		  <input type="number" class="form-control" id="subtractAmount">
+		</div>
+	  </div>
+	</div>
+	<div class="row mt-3">
+	  <div class="col">
+		<button id="runButton" class="btn btn-primary w-100">Run Code</button>
+	  </div>
+	  <div class="col">
+		<button id="resetButton" class="btn btn-secondary w-100">Reset</button>
+	  </div>
+	</div>
+  </div>
+
+  <div class="chart-container">
+	<canvas id="chart"></canvas>
+  </div>
+
+  <script>
+	const getElement = (id) => document.getElementById(id);
+	
+	let kapital, totalTrades, trade = 0, chart;
+	
+	getElement("runButton").addEventListener("click", () => {
+	  kapital = getElement("positionSize").value;
+	  totalTrades = getElement("numTrades").value;
+	  const winProcent = getElement("winPercentage").value;
+	  const lossProcent = getElement("lossPercentage").value;
+	  const subtractAfter = getElement("subtractAfter").value;
+	  const subtractAmount = getElement("subtractAmount").value;
+	
+	  if (kapital && totalTrades && winProcent && lossProcent && subtractAfter && subtractAmount) {
+		const chartData = [];
+		trade = 0;
+	
+		const winRateInput = getElement("winRate");
+		const winRate = parseFloat(winRateInput.value);
+	
+		for (let i = 0; i < totalTrades; i++) {
+		  trade++;
+	
+		  if (Math.random() < winRate / 100) {
+			kapital *= (1 + winProcent / 100);
+			console.log(`${trade} Win trade: ${Math.round(kapital)}`);
+		  } else {
+			kapital *= (1 - lossProcent / 100);
+			console.log(`${trade} Loss trade: ${Math.round(kapital)}`);
+		  }
+	
+		  if (trade % subtractAfter === 0) {
+			kapital -= subtractAmount;
+			console.log(`${trade} Subtracted: ${subtractAmount} New balance: ${Math.round(kapital)}`);
+		  }
+	
+		  chartData.push({ x: trade, y: kapital });
+		}
+	
+		renderChart(chartData);
+	  } else {
+		console.log("Please enter valid inputs for position size, number of trades, win percentage, loss percentage, subtract after, and subtract amount.");
+	  }
+	});
+	
+	getElement("resetButton").addEventListener("click", () => {
+	  getElement("positionSize").value = "";
+	  getElement("numTrades").value = "";
+	  getElement("winPercentage").value = "";
+	  getElement("lossPercentage").value = "";
+	  getElement("subtractAfter").value = "";
+	  getElement("subtractAmount").value = "";
+	  kapital = undefined;
+	  totalTrades = undefined;
+	  trade = 0;
+	  clearChart();
+	});
+
+
+	function renderChart(data) {
+	  clearChart();
+
+	  const ctx = getElement("chart").getContext("2d");
+	  chart = new Chart(ctx, {
+		type: "line",
+		data: {
+		  datasets: [{
+			label: "Equity",
+			data: data,
+			borderColor: "rgb(54, 162, 235)",
+			backgroundColor: "rgba(54, 162, 235, 0.2)",
+			tension: 0.3,
+			fill: true,
+		  }],
+		},
+		options: {
+		  responsive: true,
+		  scales: {
+			x: {
+			  type: "linear",
+			  position: "bottom",
+			  title: {
+				display: true,
+				text: "Trades",
+			  },
+			},
+			y: {
+			  title: {
+				display: true,
+				text: "Equity",
+			  },
+			},
+		  },
+		},
+	  });
+	}
+
+	function clearChart() {
+	  if (chart) {
+		chart.destroy();
+	  }
+	}
+  </script>
+</body>
+
+</html>

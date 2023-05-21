@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+	<h1>Expense Tracker</h1>
+	<table class="table">
+	  <thead>
+		<tr>
+		  <th>#</th>
+		  <th>Date</th>
+		  <th>Category</th>
+		  <th>Amount</th>
+		  <th>Actions</th>
+		</tr>
+	  </thead>
+	  <tbody>
+		<!-- Expenses will be dynamically added here -->
+		<div class="modal-body">
+		  <form id="expenseForm">
+			<div class="mb-3">
+			  <label for="expenseDate" class="form-label">Date</label>
+			  <input type="text" class="form-control" id="expenseDate" required>
+			</div>
+			<div class="mb-3">
+			  <label for="expenseCategory" class="form-label">Category</label>
+			  <input type="text" class="form-control" id="expenseCategory" required>
+			</div>
+			<div class="mb-3">
+			  <label for="expenseAmount" class="form-label">Amount</label>
+			  <input type="number" class="form-control" id="expenseAmount" required>
+			</div>
+		  </form>
+		</div>
+	  </tbody>
+	</table>
+	<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">Add Expense</button>
+  </div>
+
+  <!-- Add Expense Modal -->
+  <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="addExpenseModalLabel">Add Expense</h5>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <!-- Expense form goes here -->
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		  <button type="button" class="btn btn-primary" id="saveExpense">Save</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+<script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/expenses.js"></script> <!-- You can create a separate JavaScript file for your custom logic -->
+</body>
+</html>
